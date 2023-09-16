@@ -1,0 +1,33 @@
+<div class="back redir" style="display: inline-block;" data-redir="main" data-align="right"><span>←</span></div>
+<div class="wrapper">
+    <ul class="list">
+        
+    </ul>
+    <span class="createScore">+</span>
+    <script>
+        const list = document.querySelector('ul.list');
+        function refreshLibrary() {
+            list.innerHTML = '';
+            fetch('/files', {method: 'POST'}).then(response => response.blob()).then(data => data.text()).then(text => JSON.parse(text)).then(scores => {
+                scores.forEach(score => {
+                    let li = document.createElement('li');
+                    li.innerText = score.name;
+                    li.classList.add('yellow');
+                    li.onclick = () => {
+                        localStorage.setItem('FILEDATA', JSON.stringify(score));
+                        openTab('editor', 'left');
+                    }
+                    list.append(li);
+                });
+            });
+        }
+        refreshLibrary();
+        document.querySelector('.createScore').onclick = () => {
+            let nameOfFile = prompt("Name of file:", "Untitled");
+            if (!nameOfFile) return;
+            fetch(`/files?action=create&name=${nameOfFile}`, {method: 'POST'}).then(() => {
+                refreshLibrary();
+            })
+        }
+    </script>
+</div>
