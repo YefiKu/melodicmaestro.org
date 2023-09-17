@@ -1,17 +1,18 @@
-<form action="/signup" method="post" class="wrapper" style="top:10vh">
+<form id="form-signup" class="wrapper" style="top:10vh">
     <div class="form">
         <h2>Sign Up</h2>
+        <br><span class="error error_user"></span>
         <div class="form-group">
             <input type="text" placeholder="Username" name="username" class="form-control">
-            <span class="invalid-feedback"></span>
+            <br><span class="error error_username"></span>
         </div>    
         <div class="form-group">
             <input type="password" placeholder="Password" name="password" class="form-control" value="">
-            <span class="invalid-feedback"></span>
+            <br><span class="error error_password"></span>
         </div>
         <div class="form-group">
             <input type="password" placeholder="Confirm password" name="confirm_password" class="form-control" value="">
-            <span class="invalid-feedback"></span>
+            <br><span class="error error_confirmpassword"></span>
         </div>
         <div class="form-group">
             <input type="submit" class="yellow" value="Submit">
@@ -20,3 +21,21 @@
         <p>Already have an account? <a class="redir" data-redir="login" data-align="left">Login here</a>.</p>
     </div>
 </form>
+<script>
+    let formSignUp = document.getElementById("form-signup");
+    formSignUp.onsubmit = event => {
+        event.preventDefault();
+        formSignUp.querySelectorAll('.error').forEach(spanErr => spanErr.style.display = 'none');
+        let formdata = new FormData(formSignUp);
+        fetch(`/signup`, {method: 'POST',body:formdata}).then(response => response.blob()).then(data => data.text()).then(text => {
+            let data = JSON.parse(text);
+            let isEmpty = true;
+            Object.keys(data).forEach(error_name => {
+                formSignUp.querySelector(".error."+error_name).innerText = data[error_name];
+                formSignUp.querySelector(".error."+error_name).style.display = data[error_name]?.length ? "inline-block" : "none";
+                isEmpty &&= !data[error_name]?.length;
+            });
+            if (isEmpty) openTab("login", "right");
+        })
+    } 
+</script>

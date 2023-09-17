@@ -6,16 +6,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             logout();
             break;
         case "login":
-            session_start();
-            // Check if the user is already logged in, if yes then redirect him to welcome page
-            if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-                header("location: /");
-                exit;
-            }
-            login();
+            echo(login());
             break;
         case "signup":
-            signup();
+            echo(signup());
             break;
         case "resetpassword":
             // Initialize the session
@@ -26,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 header("location: /#login");
                 exit;
             }
-            resetPassword();
+            echo(resetPassword());
             break;
         case "files":
             switch ($_GET['action']) {

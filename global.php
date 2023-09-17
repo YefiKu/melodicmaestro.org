@@ -1,6 +1,5 @@
 <?php
 $username = $password = "";
-$username_err = $password_err = $login_err = "";
 function logout() {
     // Initialize the session
     session_start();
@@ -19,20 +18,20 @@ function login() {
     require_once("config.php");
     // Check if username is empty
     if(empty($_POST["username"])){
-        $username_err = "Please enter username.";
+        $error_login_username = "Please enter username.";
     } else{
         $username = trim($_POST["username"]);
     }
     
     // Check if password is empty
     if(empty($_POST["password"])){
-        $password_err = "Please enter your password.";
-    } else{
+        $error_login_password = "Please enter your password.";
+    } else {
         $password = trim($_POST["password"]);
     }
     
     // Validate credentials
-    if(empty($username_err) && empty($password_err)){
+    if(empty($error_login_username) && empty($error_login_password)){
         // Prepare a select statement
         $sql = "SELECT id, username, password FROM users WHERE username = ?";
         
@@ -62,16 +61,14 @@ function login() {
                             $_SESSION["id"] = $id;
                             $_SESSION["username"] = $username;                            
                             
-                            header("Location: /");
-                            exit;
                         } else{
                             // Password is not valid, display a generic error message
-                            $login_err = "Invalid username or password.";
+                            $error_login_user = "Invalid username or password.";
                         }
                     }
                 } else{
                     // Username doesn't exist, display a generic error message
-                    $login_err = "Invalid username or password.";
+                    $error_login_user = "Invalid username or password.";
                 }
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
@@ -79,18 +76,24 @@ function login() {
 
             // Close statement
             mysqli_stmt_close($stmt);
+            
         }
     }
     
     // Close connection
     mysqli_close($link);
+    return json_encode([
+        "error_user" => $error_login_user,
+        "error_username" => $error_login_username,
+        "error_password" => $error_login_password
+    ]);
 }
 function signup() {
     require_once("config.php");
     if(empty($_POST["username"])){
-        $username_err = "Please enter a username.";
+        $error_signup_username = "Please enter a username.";
     } elseif(!preg_match('/^[A-z0-9_]+$/', trim($_POST["username"]))){
-        $username_err = "Username can only contain letters, numbers, and underscores.";
+        $error_signup_username = "Username can only contain letters, numbers, and underscores.";
     } else{
         // Prepare a select statement
         $sql = "SELECT id FROM users WHERE username = ?";
@@ -107,7 +110,7 @@ function signup() {
                 mysqli_stmt_store_result($stmt);
                 
                 if(mysqli_stmt_num_rows($stmt) == 1){
-                    $username_err = "This username is already taken.";
+                    $error_signup_username = "This username is already taken.";
                 } else{
                     $username = trim($_POST["username"]);
                 }
@@ -122,25 +125,25 @@ function signup() {
     
     // Validate password
     if(empty($_POST["password"])){
-        $password_err = "Please enter a password.";     
+        $error_signup_password = "Please enter a password.";     
     } elseif(strlen(trim($_POST["password"])) < 6){
-        $password_err = "Password must have atleast 6 characters.";
+        $error_signup_password = "Password must have atleast 6 characters.";
     } else{
         $password = trim($_POST["password"]);
     }
     
     // Validate confirm password
     if(empty($_POST["confirm_password"])){
-        $confirm_password_err = "Please confirm password.";     
+        $error_signup_confirmpassword = "Please confirm password.";     
     } else{
         $confirm_password = trim($_POST["confirm_password"]);
-        if(empty($password_err) && ($password != $confirm_password)){
-            $confirm_password_err = "Password did not match.";
+        if(empty($error_signup_password) && ($password != $confirm_password)){
+            $error_signup_confirmpassword = "Password did not match.";
         }
     }
     
     // Check input errors before inserting in database
-    if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
+    if(empty($error_signup_username) && empty($error_signup_password) && empty($error_signup_confirmpassword)){
         
         // Prepare an insert statement
         $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
@@ -154,11 +157,9 @@ function signup() {
             $param_password = password_hash($password, PASSWORD_DEFAULT); // Creates a password hash
             
             // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
-                // Redirect to login page
-                header("Location: /#login");
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
+            if(!mysqli_stmt_execute($stmt)){
+                
+                $error_signup_user = "Oops! Something went wrong. Please try again later.";
             }
 
             // Close statement
@@ -168,37 +169,43 @@ function signup() {
     
     // Close connection
     mysqli_close($link);
+    return json_encode([
+        "error_user" => $error_signup_user,
+        "error_username" => $error_signup_username,
+        "error_password" => $error_signup_password,
+        "error_confirmpassword" => $error_signup_confirmpassword
+    ]);
 }
 function resetPassword() {
     require_once "config.php";
  
     // Define variables and initialize with empty values
     $new_password = $confirm_password = "";
-    $new_password_err = $confirm_password_err = "";
+    $error_resetpass_newpass = $error_resetpass_confirmpass = "";
     
     // Processing form data when form is submitted
     
     // Validate new password
     if(empty(trim($_POST["new_password"]))){
-        $new_password_err = "Please enter the new password.";     
+        $error_resetpass_newpass = "Please enter the new password.";     
     } elseif(strlen(trim($_POST["new_password"])) < 6){
-        $new_password_err = "Password must have atleast 6 characters.";
+        $error_resetpass_newpass = "Password must have atleast 6 characters.";
     } else{
         $new_password = trim($_POST["new_password"]);
     }
     
     // Validate confirm password
     if(empty(trim($_POST["confirm_password"]))){
-        $confirm_password_err = "Please confirm the password.";
+        $error_resetpass_confirmpass = "Please confirm the password.";
     } else{
         $confirm_password = trim($_POST["confirm_password"]);
-        if(empty($new_password_err) && ($new_password != $confirm_password)){
-            $confirm_password_err = "Password did not match.";
+        if(empty($error_resetpass_newpass) && ($new_password != $confirm_password)){
+            $error_resetpass_confirmpass = "Password did not match.";
         }
     }
         
     // Check input errors before updating the database
-    if(empty($new_password_err) && empty($confirm_password_err)){
+    if(empty($error_resetpass_newpass) && empty($error_resetpass_confirmpass)){
         // Prepare an update statement
         $sql = "UPDATE users SET password = ? WHERE id = ?";
         
@@ -214,10 +221,6 @@ function resetPassword() {
             if(mysqli_stmt_execute($stmt)){
                 // Password updated successfully. Destroy the session, and redirect to login page
                 session_destroy();
-                header("location: /#login");
-                exit();
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
             }
 
             // Close statement
@@ -227,6 +230,10 @@ function resetPassword() {
     
     // Close connection
     mysqli_close($link);
+    return json_encode([
+        "error_newpass" => $error_resetpass_newpass,
+        "error_confirmpass" => $error_resetpass_confirmpass
+    ]);
 }
 function getFiles() {
     require_once "config.php";

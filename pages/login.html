@@ -1,13 +1,14 @@
-<form action="/login" method="post" class="wrapper" style="top: 25vh">
+<form id="form-login" class="wrapper" style="top: 25vh">
     <div class="form">
         <h2>Login</h2>
+        <br><span class="error error_user"></span>
         <div class="form-group">
             <input type="text" placeholder="Username" name="username" class="form-control">
-            <span class="invalid-feedback"></span>
-        </div>    
+            <br><span class="error error_username"></span>
+        </div>
         <div class="form-group">
             <input type="password" placeholder="Password" name="password" class="form-control">
-            <span class="invalid-feedback"></span>
+            <br><span class="error error_password"></span>
         </div>
         <div class="form-group">
             <input type="submit" class="yellow" value="Login">
@@ -15,3 +16,21 @@
         <p>Don't have an account? <a class="redir" data-redir="signup" data-align="left">Sign up now</a>.</p>
     </div>
 </form>
+<script>
+    let formLogin = document.getElementById("form-login");
+    formLogin.onsubmit = event => {
+        event.preventDefault();
+        formLogin.querySelectorAll('.error').forEach(spanErr => spanErr.style.display = 'none');
+        let formdata = new FormData(formLogin);
+        fetch(`/login`, {method: 'POST',body:formdata}).then(response => response.blob()).then(data => data.text()).then(text => {
+            let data = JSON.parse(text);
+            let isEmpty = true;
+            Object.keys(data).forEach(error_name => {
+                formLogin.querySelector(".error."+error_name).innerText = data[error_name];
+                formLogin.querySelector(".error."+error_name).style.display = data[error_name]?.length ? "inline-block" : "none";
+                isEmpty &&= !data[error_name]?.length;
+            });
+            if (isEmpty) openTab("main", "right");
+        })
+    } 
+</script>
