@@ -6,7 +6,7 @@
     <?php
     session_start();
     if ($_SESSION['id']) {?>
-        <h1>Hello, <?php echo $_SESSION['username'];?>!</h1>
+        <h1>Hello, <?=$_SESSION['username']?>!</h1>
     <?php } else {?>
         <h1>Hello! You need to <a class="redir" data-redir="login" data-align="left">login</a></h1>
     <?php }?>

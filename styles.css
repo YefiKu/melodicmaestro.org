@@ -230,7 +230,9 @@ body {
 	}
 }
 @keyframes moveToCenter {
-	
+	to {
+		transform: translateX(0%);
+	}
 }
 body > .openedTabs > .tab {
 	display: inline-block;

@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="robots" content="index,follow">
 	<meta name="keywords" content="editor,clef,music,writing,yefi,YES,free editor,hafi mus,note,note writing">
 	<meta name="description" content="You can create music for free! - hafi mus">
 	<title>Melody editor by YES</title>

@@ -35,7 +35,17 @@
                 formSignUp.querySelector(".error."+error_name).style.display = data[error_name]?.length ? "inline-block" : "none";
                 isEmpty &&= !data[error_name]?.length;
             });
-            if (isEmpty) openTab("login", "right");
+            if (isEmpty) {
+                fetch(`/login`, {method: 'POST',body:formdata}).then(response => response.blob()).then(data => data.text()).then(text => {
+                    let areErrores = false;
+                    Object.values(JSON.parse(text)).forEach(error_value => areErrores ||= error_value);
+                    if (areErrores) {
+                        openTab("login", "right");
+                    } else {
+                        openTab("main", "right");
+                    }
+                })
+            }
         })
     } 
 </script>

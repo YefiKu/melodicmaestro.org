@@ -5,6 +5,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         case "logout":
             logout();
             break;
+        case "me":
+            session_start();
+            echo(json_encode([
+                "username"=>$_SESSION["username"],
+                "loggedin"=>$_SESSION["loggedin"],
+                "id"=>$_SESSION["id"]
+            ]));
+            break;
         case "login":
             echo(login());
             break;
