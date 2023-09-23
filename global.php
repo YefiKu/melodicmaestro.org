@@ -339,3 +339,62 @@ function renameFile($file_id, $new_name) {
     mysqli_close($link);
     return true;
 }
+function createFolder($folder_name) {
+    require_once "config.php";
+    $folders = getFolders();
+    $sql = "UPDATE users SET folders = ? WHERE id = ?";
+    if ($stmt = mysqli_prepare($link, $sql)) {
+        session_start();
+        $id = $_SESSION['id'];
+        $toAdd = $folders.(strlen($folders)?",":"").$folder_name;
+        mysqli_stmt_bind_param($stmt, "si", $toAdd, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+    mysqli_close($link);
+    return true;
+}
+function getFolders() {
+    require_once "config.php";
+    $sql = "SELECT folders FROM users WHERE id = ?";
+    $folders = "";
+    if ($stmt = mysqli_prepare($link, $sql)) {
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        session_start();
+        $id = $_SESSION['id'];
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_result($stmt, $folderColumn);
+        if (mysqli_stmt_fetch($stmt)) {
+            $folders = $folderColumn;
+        }
+        mysqli_stmt_close($stmt);
+    }
+    mysqli_close($link);
+    return $folders;
+}
+function deleteFolder($folder_name) {
+    require_once "config.php";
+    $sql = "";
+    if ($stmt = mysqli_prepare($link, $sql)) {
+
+        mysqli_stmt_close($stmt);
+    }
+    mysqli_close($link);
+    return true;
+}
+function renameFolder($old_name, $new_name) {
+    require_once "config.php";
+    $folders = getFolders();
+    $reg = new RegExp(`(?<=,)$old_name(?=,)|^$old_name(?=,)|(?<=,)^$old_name$`, 'g');
+    $sql = "UPDATE users SET folders = ? WHERE id = ?";
+    if (preg_match($reg, $folders) && $stmt = mysqli_prepare($link, $sql)) {
+        mysqli_stmt_bind_param($stmt, "si", $toAdd, $id);
+        session_start();
+        $id = $_SESSION['id'];
+        $toAdd = preg_replace($reg, $new_name, $folders);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+    mysqli_close($link);
+    return true;
+}

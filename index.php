@@ -61,6 +61,29 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     break;
             }
             break;
+        case "folders":
+            switch ($_GET['action']) {
+                case 'create':
+                    if ($_GET['name']) {
+                        createFolder($_GET['name']);
+                    }
+                    break;
+                case 'delete':
+                    if ($_GET['name']) {
+                        deleteFolder($_GET['name']);
+                    }
+                    break;
+                case 'rename':
+                    if ($_GET['oldname'] && $_GET['newname']) {
+                        renameFolder($_GET['oldname'], $_GET['newname']);
+                    }
+                    break;
+                default:
+                    $folders = getFolders();
+                    echo(strlen($folders) ? json_encode(explode(',', $folders)) : "{}");
+                    break;
+            }
+            break;
         default:
             require('404.html');
     }

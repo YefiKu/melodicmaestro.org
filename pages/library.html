@@ -9,6 +9,7 @@
         function refreshLibrary() {
             list.innerHTML = '';
             fetch('/files', {method: 'POST'}).then(response => response.blob()).then(data => data.text()).then(scores => {
+                console.log(scores)
                 scores = JSON.parse(scores);
                 scores.forEach(score => {
                     let li = document.createElement('li');

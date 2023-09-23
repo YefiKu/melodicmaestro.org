@@ -49,7 +49,7 @@
 </head>
 <body>
 	<div class="openedTabs"></div>
-	<div class="tab main" data-tab="main"><?php require 'pages/main.php';?></div>
+	<div class="tab main" data-tab="main"><?php require 'pages/main.html';?></div>
 	<div class="tab library" data-tab="library"><?php require 'pages/library.html';?></div>
 	<div class="tab editor" data-tab="editor"><?php require 'pages/editor.html';?></div>
 	<div class="tab login" data-tab="login"><?php require 'pages/login.html';?></div>

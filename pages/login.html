@@ -30,7 +30,10 @@
                 formLogin.querySelector(".error."+error_name).style.display = data[error_name]?.length ? "inline-block" : "none";
                 isEmpty &&= !data[error_name]?.length;
             });
-            if (isEmpty) openTab("main", "right");
+            if (isEmpty) {
+                refreshMainPage();
+                openTab("main", "right")
+            }
         })
     } 
 </script>
