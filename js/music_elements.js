@@ -832,6 +832,9 @@ class Sheet {
 	clone() {
 		return new Sheet(this.svgContext);
 	}
+	get elements() {
+		return this.lines.reduce((prev,cur) => prev.concat(cur.elements), []);
+	}
 	appendLine() {
 		let st = new Stave(1, this.lines.length*10+5, this.svgContext.viewBox.baseVal.width - 2, this.svgContext.viewBox.baseVal.height / 50);
 		st.parent = this;
@@ -926,6 +929,7 @@ class Sheet {
 			element.selectable = true;
 			this.unselectAll();
 			result &&= this.lines.at(-1).append(element);
+			this?.onappend();
 			if (!result) throw '!';
 			return true;
 		} catch (err) {

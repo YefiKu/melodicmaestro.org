@@ -1,6 +1,10 @@
-<header id="mainHeader">
-    <div class="accountContent">Your account</div>
-    <div class="info"><span class="redir" data-redir="library" data-align="left">Library</span> | <span class="redir" data-redir="editor" data-align="left">Editor</span></div>
+<header>
+    <a class="redir active">Home</a>
+    <a class="redir" data-redir="library" data-align="left">Library</a>
+    <a class="redir" data-redir="editor" data-align="left">Editor</a>
+    <a href="javascript:void(0)" class="bar" onclick="responsiveBar()">
+        <img class="icon" src="/images/bar.svg"/>
+    </a>
 </header>
 <div class="wrapper">
     <h1 id="greeting"></h1>
@@ -16,6 +20,14 @@
                 h1.innerHTML = 'Hello! You need to <a class="redir" data-redir="login" data-align="left">login</a>';
             }
         })
+    }
+    function responsiveBar() {
+        var x = document.querySelector(".main header");
+        if (x.className === "") {
+            x.className += " responsive";
+        } else {
+            x.className = "";
+        }
     }
     refreshMainPage();
 </script>

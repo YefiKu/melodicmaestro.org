@@ -235,164 +235,82 @@ function resetPassword() {
         "error_confirmpass" => $error_resetpass_confirmpass
     ]);
 }
-function getFiles() {
+function getItems() {
     require_once "config.php";
-    $sql = "SELECT file_id, file_name, file_data, created_at FROM files WHERE user_id = ?";
-    $files = [];
+    $items = [];
+    $sql = "SELECT * FROM files WHERE user_id = ?";
     if ($stmt = mysqli_prepare($link, $sql)) {
-        mysqli_stmt_bind_param($stmt, "i", $id);
         session_start();
-        $id = $_SESSION['id'];
+        mysqli_stmt_bind_param($stmt, "i", $_SESSION['id']);
         mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $file_id, $file_name, $file_data, $created_at);
+        mysqli_stmt_bind_result($stmt, $id, $usr, $path, $data, $created_at);
         while (mysqli_stmt_fetch($stmt)) {
-           $file = [];
-           $file["name"] = $file_name;
-           $file["id"] = $file_id;
-           $file["data"] = $file_data;
-           $file["created_at"] = $created_at;
-           $files[] = $file;
+           $items[] = ["id"=>$id,"type"=>"file","path"=>$path,"data"=>$data,"created_at"=>$created_at];
         }
         mysqli_stmt_close($stmt);
     }
-    mysqli_close($link);
-    return json_encode($files);
-}
-function searchFile($search_id) {
-    require_once "config.php";
-    $sql = "SELECT file_id, file_name, file_data, created_at FROM files WHERE user_id = ? AND file_id = $search_id";
+    $sql = "SELECT * FROM folders WHERE user_id = ?";
     if ($stmt = mysqli_prepare($link, $sql)) {
-        mysqli_stmt_bind_param($stmt, "i", $id);
         session_start();
-        $id = $_SESSION['id'];
+        mysqli_stmt_bind_param($stmt, "i", $_SESSION['id']);
         mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $file_id, $file_name, $file_data, $created_at);
-        mysqli_stmt_fetch($stmt);
-        $file = [
-            "name" => $file_name,
-            "id" => $file_id,
-            "data" => $file_data,
-            "created_at" => $created_at
-        ];
+        mysqli_stmt_bind_result($stmt, $id, $path, $usr, $created_at);
+        while (mysqli_stmt_fetch($stmt)) {
+           $items[] = ["id"=>$id,"type"=>"folder","path"=>$path,"created_at"=>$created_at];
+        }
         mysqli_stmt_close($stmt);
     }
     mysqli_close($link);
-    return json_encode($file);
+    return json_encode($items);
 }
-function createFile($file_name) {
+function createItem($type, $path) {
     require_once "config.php";
-    $result = true;
-    $sql = "SELECT file_id FROM files WHERE user_id = ? AND file_name = ?";
-    if ($stmt = mysqli_prepare($link, $sql)) {
-        mysqli_stmt_bind_param($stmt, "is", $id, $file_name);
-        session_start();
-        $id = $_SESSION['id'];
+    $result = "";
+    $isset = false;
+    session_start();
+    $id = $_SESSION['id'];
+    if ($stmt = mysqli_prepare($link, "SELECT id FROM ${type}s WHERE user_id = ? AND path = ?")) {
+        mysqli_stmt_bind_param($stmt, "is", $id, $path);
         $result = mysqli_stmt_execute($stmt);
-        mysqli_stmt_store_result($stmt);
-                
-        if(mysqli_stmt_num_rows($stmt) == 1){
-            $file_err = "Already exists this file.";
-            $result = false;
-        }
+        $isset = !!mysqli_stmt_num_rows($stmt);
+        mysqli_stmt_close($stmt);
     }
-    if ($result) {
-        $sql = "INSERT INTO files (user_id, file_name, file_data) VALUES (?, \"$file_name\", \"\")";
-        if ($stmt = mysqli_prepare($link, $sql)) {
-            mysqli_stmt_bind_param($stmt, "i", $id);
-            $result = mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-        }
+    if (!$isset && $stmt = mysqli_prepare($link, "INSERT INTO ${type}s (user_id, path) VALUES (?, ?)")) {
+        mysqli_stmt_bind_param($stmt, "is", $id, $path);
+        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+    mysqli_close($link);
+    echo $isset;
+}
+function uploadDataToFile($id, $data) {
+    require_once "config.php";
+    $sql = "UPDATE files SET data = ? WHERE id = ?";
+    if ($stmt = mysqli_prepare($link, $sql)) {
+        mysqli_stmt_bind_param($stmt, "si", $data, $id);
+        $result = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
     mysqli_close($link);
     return $result;
 }
-function uploadDataToFile($file_id, $data) {
+function deleteItem($type, $id) {
     require_once "config.php";
-    $sql = "UPDATE files SET file_data = ? WHERE file_id = ?";
-    if ($stmt = mysqli_prepare($link, $sql)) {
-        mysqli_stmt_bind_param($stmt, "si", $data, $file_id);
-        $result = mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
-    mysqli_close($link);
-    return true;
-}
-function deleteFile($file_id) {
-    require_once "config.php";
-    $sql = "DELETE FROM files WHERE file_id = ?";
-    if ($stmt = mysqli_prepare($link, $sql)) {
-        mysqli_stmt_bind_param($stmt, "i", $file_id);
-        $result = mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
-    mysqli_close($link);
-    return true;
-}
-function renameFile($file_id, $new_name) {
-    require_once "config.php";
-    $sql = "UPDATE files SET file_name = ? WHERE file_id = ?";
-    if ($stmt = mysqli_prepare($link, $sql)) {
-        mysqli_stmt_bind_param($stmt, "si", $new_name, $file_id);
-        $result = mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
-    mysqli_close($link);
-    return true;
-}
-function createFolder($folder_name) {
-    require_once "config.php";
-    $folders = getFolders();
-    $sql = "UPDATE users SET folders = ? WHERE id = ?";
-    if ($stmt = mysqli_prepare($link, $sql)) {
-        session_start();
-        $id = $_SESSION['id'];
-        $toAdd = $folders.(strlen($folders)?",":"").$folder_name;
-        mysqli_stmt_bind_param($stmt, "si", $toAdd, $id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
-    mysqli_close($link);
-    return true;
-}
-function getFolders() {
-    require_once "config.php";
-    $sql = "SELECT folders FROM users WHERE id = ?";
-    $folders = "";
+    $sql = "DELETE FROM ${type}s WHERE id = ?";
     if ($stmt = mysqli_prepare($link, $sql)) {
         mysqli_stmt_bind_param($stmt, "i", $id);
-        session_start();
-        $id = $_SESSION['id'];
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $folderColumn);
-        if (mysqli_stmt_fetch($stmt)) {
-            $folders = $folderColumn;
-        }
+        $result = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
     }
     mysqli_close($link);
-    return $folders;
+    return $result;
 }
-function deleteFolder($folder_name) {
+function moveItem($type, $id, $path) {
     require_once "config.php";
-    $sql = "";
+    $sql = "UPDATE ${type}s SET path = ? WHERE id = ?";
     if ($stmt = mysqli_prepare($link, $sql)) {
-
-        mysqli_stmt_close($stmt);
-    }
-    mysqli_close($link);
-    return true;
-}
-function renameFolder($old_name, $new_name) {
-    require_once "config.php";
-    $folders = getFolders();
-    $reg = new RegExp(`(?<=,)$old_name(?=,)|^$old_name(?=,)|(?<=,)^$old_name$`, 'g');
-    $sql = "UPDATE users SET folders = ? WHERE id = ?";
-    if (preg_match($reg, $folders) && $stmt = mysqli_prepare($link, $sql)) {
-        mysqli_stmt_bind_param($stmt, "si", $toAdd, $id);
-        session_start();
-        $id = $_SESSION['id'];
-        $toAdd = preg_replace($reg, $new_name, $folders);
-        mysqli_stmt_execute($stmt);
+        mysqli_stmt_bind_param($stmt, "si", $path, $id);
+        $result = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
     }
     mysqli_close($link);

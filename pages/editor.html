@@ -9,50 +9,48 @@
         <div class="tablinks" onclick="event.target === this ? openCity() : null;">
             <div class="container">
                 <button onclick="openCity(event, 'general')">GENERAL</button>
-                <button onclick="openCity(event, 'notes')">NOTES</button>
                 <button onclick="openCity(event, 'clefs-and-other')">CLEFS</button>
+                <button onclick="openCity(event, 'notes')">NOTES</button>
                 <button onclick="openCity(event, 'dynamic-and-temp')">DYNAMIC</button>
             </div>
         </div>
     </div>
     <div class="tabs program" data-program="main">
         <div id="general" class="tab">
-            <img class="icon command" src="images/copy.svg" data-command="copy"/>
-            <img class="icon command" src="images/cut.svg" data-command="cut"/>
-            <img class="icon command" src="images/paste.svg" data-command="paste"/>
-            <img class="icon command" src="images/play.svg" data-command="play"/>
-            <img class="icon command" src="images/select_all.svg" data-command="selectAll"/>
-            <img class="icon command" src="images/delete.svg" data-command="delete"/>
-            <img class="icon command" src="images/share.svg" data-command="share"/>
+            <img class="icon yellow hov command" src="images/copy.svg" data-command="copy"/>
+            <img class="icon yellow hov command" src="images/cut.svg" data-command="cut"/>
+            <img class="icon yellow hov command" src="images/paste.svg" data-command="paste"/>
+            <img class="icon yellow hov command" src="images/play.svg" data-command="play"/>
+            <img class="icon yellow hov command" src="images/select_all.svg" data-command="selectAll"/>
+            <img class="icon yellow hov command" src="images/delete.svg" data-command="delete"/>
+            <img class="icon yellow hov command" src="images/share.svg" data-command="share"/>
+        </div>
+        <div id="clefs-and-other" class="tab">
+            <svg class="clef-Sol4,6 icon yellow hov"></svg>
+            <svg class="clef-Fa3,2 icon yellow hov"></svg>
+            <svg class="clef-Do4,4 icon yellow hov"></svg>
+            <svg class="key-tonality,Sol,natural openProgram icon yellow hov" data-program="tonality"></svg>
+            <svg class="time-4,4 openProgram icon yellow hov" data-program="time"></svg>
         </div>
         <div id="notes" class="tab">
-            <svg class="note-64 icon"></svg>
-            <svg class="note-32 icon"></svg>
-            <svg class="note-16 icon"></svg>
-            <svg class="note-8 icon"></svg>
-            <svg class="note-4 icon"></svg>
-            <div class="svg-container"><svg class="note-2 icon"></svg></div>
-            <div class="svg-container"><svg class="note-1 icon"></svg></div>
-            <div class="svg-container"><svg class="pause-64 icon"></svg></div>
-            <div class="svg-container"><svg class="pause-32 icon"></svg></div>
-            <div class="svg-container"><svg class="pause-16 icon"></svg></div>
-            <div class="svg-container"><svg class="pause-8 icon"></svg></div>
-            <div class="svg-container"><svg class="pause-4 icon"></svg></div>
-            <div class="svg-container"><svg class="pause-2 icon"></svg></div>
-            <div class="svg-container"><svg class="pause-1 icon"></svg></div>
-            <div class="svg-container"><svg class="alteration-flat icon"></svg></div>
-            <div class="svg-container"><svg class="alteration-sharp icon"></svg></div>
-            <div class="svg-container"><svg class="alteration-natural icon"></svg></div>
+            <svg class="note-64 icon yellow hov"></svg>
+            <svg class="note-32 icon yellow hov"></svg>
+            <svg class="note-16 icon yellow hov"></svg>
+            <svg class="note-8 icon yellow hov"></svg>
+            <svg class="note-4 icon yellow hov"></svg>
+            <svg class="note-2 icon yellow hov"></svg>
+            <svg class="note-1 icon yellow hov"></svg>
+            <svg class="pause-64 icon yellow hov"></svg>
+            <svg class="pause-32 icon yellow hov"></svg>
+            <svg class="pause-16 icon yellow hov"></svg>
+            <svg class="pause-8 icon yellow hov"></svg>
+            <svg class="pause-4 icon yellow hov"></svg>
+            <svg class="pause-2 icon yellow hov"></svg>
+            <svg class="pause-1 icon yellow hov"></svg>
+            <svg class="alteration-flat icon yellow hov"></svg>
+            <svg class="alteration-sharp icon yellow hov"></svg>
+            <svg class="alteration-natural icon yellow hov"></svg>
         </div>
-
-        <div id="clefs-and-other" class="tab">
-            <svg class="clef-Sol4,6 icon"></svg>
-            <svg class="clef-Fa3,2 icon"></svg>
-            <svg class="clef-Do4,4 icon"></svg>
-            <svg class="key-tonality,Sol,natural openProgram icon" data-program="tonality"></svg>
-            <svg class="time-4,4 openProgram icon" data-program="time"></svg>
-        </div>
-
         <div id="dynamic-and-temp" class="tab">
             Dynamic, Agogic, Temp
         </div>
@@ -62,9 +60,9 @@
     <div class="modal-content program" data-program="tonality">
         <div class="close">&times;</div>
         <input type="number" class="num" value="1"/>
-        <svg class="alteration-sharp icon selected"></svg>
-        <svg class="alteration-flat icon"></svg>
-        <svg class="key-tonality,Sol,natural icon tonalityIndication"></svg>
+        <svg class="alteration-sharp icon yellow hov selected"></svg>
+        <svg class="alteration-flat icon yellow hov"></svg>
+        <svg class="key-tonality,Sol,natural icon yellow hov tonalityIndication"></svg>
     </div>
 </div>
 <div class="modal sharelink">
@@ -79,7 +77,22 @@
         <div class="close">&times;</div>
         <input type="number" id="numerator" value="4"/><br>
         <input type="number" id="denominator" value="4"/>
-        <svg class="time-4,4 icon"></svg>
+        <svg class="time-4,4 icon yellow hov"></svg>
+    </div>
+</div>
+<div class="modal save">
+    <div class="modal-content">
+        <div class="close">&times;</div>
+        <div>Save</div>
+        <table>
+            <tr>
+                <td class="smnf">.smnf<br>Super memory-saving</td>
+                <td class="musicxml">.musicxml<br>All-supported format</td>
+            </tr>
+            <tr>
+                <td><button class="yellow">Save</button></td>
+            </tr>
+        </table>
     </div>
 </div>
 <div class="main wrapper" style="top: 30vh;">
@@ -104,7 +117,7 @@
         if (cityName) {
             document.getElementById(cityName).style.display = "block";
             evt.currentTarget.classList.add("active");
-        }
+        }                      
     }
     function openModal(sel) {
         editor.querySelector('.modal.'+sel).classList.add('visible')
@@ -117,8 +130,6 @@
         let sel = [...editor.querySelectorAll('.modal')].find(el => el === event.target)?.classList[1];
         sel ? closeModal(sel) : null;
     }
-    let sheet;
-    let Music;
     editor.querySelectorAll(".modal .close").forEach(c => c.onclick = () => closeModal(c.parentElement.parentElement.classList[1]));
 </script>
 <style>
@@ -142,11 +153,11 @@
         position: relative;
         top: 30vh;
         background: linear-gradient(45deg, red, #0f509a, gold);
-        margin: auto;
         padding: 20px;
-        border: 1px solid #888;
+        border: 2px solid #888;
         border-radius: 12px;
-        width: 80%;
+        left: 10vw;
+        width: 80vw;
     }
     
     /* The Close Button */
@@ -173,4 +184,3 @@
         cursor: pointer;
     }
 </style>
-<script src="/js/editor.js" type="module"></script>

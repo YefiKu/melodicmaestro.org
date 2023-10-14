@@ -33,54 +33,49 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         case "files":
             switch ($_GET['action']) {
                 case 'create':
-                    if ($_GET['name']) {
-                        createFile($_GET['name']);
+                    if ($_GET['path']) {
+                        echo createItem("file", $_GET['path']);
                     }
                     break;
                 case 'upload':
                     if ($_GET['id'] && $_GET['data']) {
-                        uploadDataToFile($_GET['id'], $_GET['data']);
+                        echo uploadDataToFile($_GET['id'], $_GET['data']);
                     }
                     break;
                 case 'delete':
                     if ($_GET['id']) {
-                        deleteFile($_GET['id']);
+                        deleteItem("file", $_GET['id']);
                     }
                     break;
-                case 'rename':
-                    if ($_GET['id'] && $_GET['name']) {
-                        renameFile($_GET['id'], $_GET['name']);
+                case 'move':
+                    if ($_GET['id'] && $_GET['path']) {
+                        moveItem("file", $_GET['id'], $_GET['path']);
                     }
                     break;
                 default:
-                    if ($_GET['id']) {
-                        print_r(searchFile($_GET['id']));
-                    } else {
-                        print_r(getFiles());
-                    }
+                    echo(getItems());
                     break;
             }
             break;
         case "folders":
             switch ($_GET['action']) {
                 case 'create':
-                    if ($_GET['name']) {
-                        createFolder($_GET['name']);
+                    if ($_GET['path']) {
+                        createItem("folder", $_GET['path']);
                     }
                     break;
                 case 'delete':
-                    if ($_GET['name']) {
-                        deleteFolder($_GET['name']);
+                    if ($_GET['id']) {
+                        deleteItem("folder", $_GET['id']);
                     }
                     break;
-                case 'rename':
-                    if ($_GET['oldname'] && $_GET['newname']) {
-                        renameFolder($_GET['oldname'], $_GET['newname']);
+                case 'move':
+                    if ($_GET['id'] && $_GET['path']) {
+                        moveItem("folder", $_GET['id'], $_GET['path']);
                     }
                     break;
                 default:
-                    $folders = getFolders();
-                    echo(strlen($folders) ? json_encode(explode(',', $folders)) : "{}");
+                    echo(getItems());
                     break;
             }
             break;

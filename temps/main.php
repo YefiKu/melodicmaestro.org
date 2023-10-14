@@ -12,6 +12,7 @@
 		let tab;
 		let openedTabs;
 		function openTab(name, align) {
+			if (!name?.length) return;
 			let oldTab = document.querySelector(`.tab[data-tab=${tab}]`);
 			let newTab = document.querySelector(`.tab[data-tab=${name}]`);
 			if (align === 'left') {
@@ -46,6 +47,7 @@
 		window.onload = refresh;
 		window.onhashchange = refresh;
 	</script>
+	<script src="/js/script.js" type="module"></script>
 </head>
 <body>
 	<div class="openedTabs"></div>
