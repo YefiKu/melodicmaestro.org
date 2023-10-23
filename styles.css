@@ -230,7 +230,7 @@ input.yellow:hover {
 .disabled {
 	opacity: 0.4;
 }
-.icon.selected {
+.selected {
 	border: 2px black dashed;
 	margin: 0px;
 }

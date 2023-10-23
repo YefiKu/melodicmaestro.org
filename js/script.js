@@ -210,12 +210,20 @@ class Editor {
 			openModal('sharelink');
 		},
 		save: () => {
-			let format = 'text/cmnf';
-			document.querySelector('.editor .modal.save td.cmnf').onclick = () => format = 'text/cmnf';
-			document.querySelector('.editor .modal.save td.musicxml').onclick = () => format = 'application/vnd.recordare.musicxml';
-			document.querySelector('.editor .modal.save td button').onclick = () => {
-	
+			let cmnf = URL.createObjectURL(new Blob([this.cmnf.encode(this.sheet.elements)], {type: "text/cmnf"}))
+			//let musicxml = URL.createObjectURL(new Blob())
+			let url = cmnf;
+			function update() {
+				document.querySelector('.editor .modal.save td a').href = url;
 			}
+			document.querySelectorAll('.editor .modal.save td.format').forEach(td => td.onclick = function() {
+				url = this.dataset.format;
+				document.querySelectorAll('.editor .modal.save td.format').forEach(td => td.classList.remove("selected"));
+				this.classList.add('selected'); 
+				update();
+			})
+			document.querySelector('.editor .modal.save td a').download = document.querySelector('.editor .name#name input').value;
+			openModal('save');
 		},
 		undo: () => {
 
@@ -371,7 +379,7 @@ let refreshEditor = async () => {
 			editor.sheet.draw();
 		} else {
 			nameOfFile.value = searchObj.has('n') ? decodeURI(searchObj.get('n')) : 'Untitled';
-			searchObj.has('d') ? decodeCMNF(searchObj.get('d')).forEach(e => editor.sheet.append(e)) : 0;
+			searchObj.has('d') ? editor.cmnf.decode(searchObj.get('d')).forEach(e => editor.sheet.append(e)) : 0;
 		}
 		editor.sheet.draw();
 	} else {
